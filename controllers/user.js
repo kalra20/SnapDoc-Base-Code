@@ -7,8 +7,8 @@ const userRoute = express.Router();
 
 // User module which is required and imported
 let userModel = require("../models/user");
-
-// To Get List Of users
+// GET APIs
+//1. To Get List Of users
 userRoute.route("/").get(function (req, res) {
   userModel.find(function (err, user) {
     if (err) {
@@ -18,7 +18,17 @@ userRoute.route("/").get(function (req, res) {
     }
   });
 });
+// To add: Get user ID from the frontend -- Should be done via authorization ?
 
+// 2. To get clients list
+userRoute.route("/client_list/:id").get(function (req, res) {
+  userModel.findById(req.params.id, function (err, user) {
+    if (!user) return next(new Error("Unable To Find User With This Id"));
+    else {
+      res.json(user.clients);
+    }
+  });
+});
 // To Add New User
 userRoute.route("/adduser").post(function (req, res) {
   let user = new userModel(req.body);
