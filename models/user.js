@@ -12,6 +12,7 @@ let User_data = new Schema(
     },
     email: {
       type: String,
+      required: true
     },
     phone: {
       type: Number,
@@ -21,6 +22,7 @@ let User_data = new Schema(
     },
     password: {
       type: String,
+      required: true
     },
     gstin: {
       type: String,
