@@ -1,12 +1,14 @@
 // Importing important packages
 const express = require("express");
-
+const { validationResult } = require("express-validator");
+const path = require("path");
 // Using express and routes
 const app = express();
 const userRoute = express.Router();
 
 // User module which is required and imported
 let userModel = require("../models/user");
+let imageModel = require("../models/image_store");
 // GET APIs
 //1. To Get List Of users
 userRoute.route("/").get(function (req, res) {
@@ -29,6 +31,46 @@ userRoute.route("/client_list/:id").get(function (req, res) {
     }
   });
 });
+
+// Add API to add a single image
+userRoute.route("/image/:id").post(function (req, res, next) {
+  userModel.findById(req.params.id, function (err, user) {
+    if (!user) return next(new Error("Unable To Find User With This Id"));
+    // else if (req.body.role != "CA")
+    //   return next(new Error("You don't have the right priviledge"));
+    else {
+      let image = new imageModel(req.body);
+      if (!req.file) {
+        const error = new Error("No image provided");
+        error.statusCode = 422;
+        throw error;
+      } else {
+        image.Client_id = req.params.id;
+        image.ImageUrl = req.file.path;
+        console.log(req.file.path);
+        image
+          .save()
+          .then((emp) => {
+            res.json("Image Added Successfully");
+          })
+          .catch((err) => {
+            res.status(400).send("Unable add Image User");
+          });
+      }
+    }
+  });
+});
+// Add API to view images for a user
+userRoute.route("/view_user_images/:id").get(function (req, res) {
+  let id = req.params.id;
+  imageModel.find({ Client_id: id }, function (err, image) {
+    // if (image.Client_id == id) {
+    //   res.json(image);
+    // }
+    res.json(image);
+  });
+});
+
 // To Add New User
 userRoute.route("/adduser").post(function (req, res) {
   let user = new userModel(req.body);
