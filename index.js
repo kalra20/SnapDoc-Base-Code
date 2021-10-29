@@ -25,6 +25,7 @@ mongoose.connect(mongoDatabase, { useNewUrlParser: true }).then(
 // All the express routes
 const userRoutes = require("./controllers/user");
 const worksheetRoute = require("./controllers/worksheet");
+const authRoutes = require("./routes/auth")
 // Conver incoming data to JSON format
 app.use(bodyParser.json());
 
@@ -37,6 +38,7 @@ const port = process.env.PORT || 8080;
 // Routes Configuration
 app.use("/admin", userRoutes);
 app.use("/worksheet", worksheetRoute);
+app.use("/auth", authRoutes);
 
 // Staring our express server
 const server = app.listen(port, () => {
