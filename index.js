@@ -5,8 +5,18 @@ const express = require("express"),
   cors = require("cors"),
   mongoose = require("mongoose");
 
+const session = require('express-session')
+const MongoDBStore = require('connect-mongodb-session')(session);
 // MongoDB Databse url
-var mongoDatabase = "mongodb://127.0.0.1:27017/Snapdoc";
+const MONGODB_URI = "mongodb://127.0.0.1:27017/Snapdoc"
+var mongoDatabase = MONGODB_URI;
+
+const store = new MongoDBStore({
+  uri: MONGODB_URI,
+  collection: 'sessions',
+
+})
+
 
 // Created express server
 const app = express();
@@ -34,6 +44,9 @@ app.use(cors());
 
 // Setup for the server port number
 const port = process.env.PORT || 8080;
+
+//session middleware
+app.use(session({secret: 'my secret', resave: false, saveUninitialized: false, store: store}))
 
 // Routes Configuration
 app.use("/admin", userRoutes);
